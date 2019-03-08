@@ -21,7 +21,6 @@
 using namespace std;
 
 //Custom variables (structs)----------------------
-
 struct coord{short int x; short int y;}; // stuct for storing coords
 
 struct board{// stores setup data for the board
