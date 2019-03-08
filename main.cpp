@@ -425,7 +425,7 @@ int main(){
     boardGen(bdCon, bd, bdDisp);//generate the game board
 
     disp(bdCon, bdDisp);//display the initial game board
-    dispDebug(bdCon, bd);
+    //dispDebug(bdCon, bd);
 
     while(true){
         guess(g, bdCon);
@@ -438,7 +438,7 @@ int main(){
                 boardGen(bdCon, bd, bdDisp);
                 disp(bdCon, bdDisp);
                 //printMineCoords(bdCon);
-                dispDebug(bdCon, bd);
+                //dispDebug(bdCon, bd);
                 e.end=false;
             }else{
                 cout<<"\n\n\n               Thanks for playing!      "<<endl<<endl<<endl<<endl;
