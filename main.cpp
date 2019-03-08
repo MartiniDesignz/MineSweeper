@@ -13,43 +13,14 @@
  * Date:       March 7, 2019
  *
 */
-
 #include <iostream>
 #include <cstdlib>
 #include <ctime>
 #include <vector>
 #include <string>
-
 using namespace std;
 
-//____________________________________Notes____________________________________
-
-/*----------Actions-------------
- * type coords to make a guess
- *
- * ---------Visual--------------
- * numbers rep the number of bombs directly around its coords
- * empty spaces are empty
- * bombs are *
- * initial spaces are -
- * (maybe border the board)
- *
- * ---------Functions-----------
- * start up func that randomly places bombs
- * input function for guess
- * func for calculating number
- * func for updating disp
- * end game func ~ displays all the bombs
- *
- * ---------General-------------
- * area to bomb ratio ~10%
- *
- *
-*/
-
-
 //Custom variables (structs)----------------------
-
 struct coord{short int x; short int y;}; // stuct for storing coords
 
 struct board{// stores setup data for the board
@@ -71,9 +42,12 @@ const int ratioBomb = 5;//ratio for num of bombs | Smaller the number the more b
 
 //general fuctions and debug functions-----------------------------
 
+
 int mod(int x, int y){return (x/y)-x%y;}//get the dividen of x / y without a remainder
 
+
 void t(){cout<<"test"<<endl;}//func for quick testing stuff
+
 
 void dispDebug(board bdCon, vector<vector<int>> &bdDisp){//displays the game board for debuging
     cout<<"  ";
@@ -99,6 +73,7 @@ void dispDebug(board bdCon, vector<vector<int>> &bdDisp){//displays the game boa
     }
 }
 
+
 void printMineCoords(board bdCon){
     for (int i=0; i<bdCon.mines.size()-1; ++i){//prints mine coords for testing
         cout<<bdCon.mines.at(i).x<<" "<<bdCon.mines.at(i).y<<endl;
@@ -107,9 +82,10 @@ void printMineCoords(board bdCon){
 
 //Game start functions----------------------
 
+
 void init(board& bd){//ask for the board dimensions and resize the mines vector
     cout<<"Enter board width: ";
-    while(true){//enter width (x)
+    while(true){//enter width
         cin>>bd.x;
         if(bd.x>=5 and bd.x<=100){
             break;
@@ -118,7 +94,7 @@ void init(board& bd){//ask for the board dimensions and resize the mines vector
         }
     }
     cout<<"Enter board height: ";
-    while(true){//enter height (y)
+    while(true){//enter height
         cin>>bd.y;
         if(bd.y>=5 and bd.y<=100){
             break;
@@ -127,8 +103,8 @@ void init(board& bd){//ask for the board dimensions and resize the mines vector
         }
     }
     bd.mines.resize(bd.x*bd.y/ratioBomb+1);
-    //cout<<bd.mines.size()<<endl<<endl;
 }
+
 
 void bombGen(board& bd){//generate the coords for the bombs
     for (int i=0; i<bd.mines.size()-1; i++){// create x mines
@@ -140,7 +116,6 @@ void bombGen(board& bd){//generate the coords for the bombs
             for (int p=0; p<bd.mines.size()-1; p++){//check for existing mines
                 if (bd.mines.at(p).x==temp.x && bd.mines.at(p).y==temp.y){
                     cont=true;
-
                     break;//stop if there is already a bomb there
                 }else{
                     cont = false;//set cont to false to break the while loop
@@ -167,7 +142,6 @@ void checkR(int rx[], int ry[], coord s, board bdCon){//determin the ranges for 
         rx[0]=-1;
         rx[1]=2;
     }
-
     if(s.y==0){
         ry[0]=0;
     }else if(s.y==bdCon.y){
@@ -205,22 +179,18 @@ void boardGen(board bdCon, vector<vector<int>>& bd, vector<vector<char>> &bdDisp
             checkR(rx, ry, s, bdCon);   //set the search ranges
             //check surrounding area................................
             if(bd[p][i]!=9){
-                //cout<<"("<<p<<", "<<i<<")"<<endl;
                 for(int j=ry[0]; j<ry[1]; j++){
                     for(int k=rx[0]; k<rx[1]; k++){
-                        //cout<<p+k<<" "<<i+j<<" | ";
                         if(bd[p+k][i+j]==9){
                             asNum++;
                         }
                     }
-                    //cout<<endl;
                 }
-                //cout<<"_______________________________"<<endl;
                 bd[p][i]=asNum;
             }
         }
     }
-    for(int i=0; i<bdCon.y; i++){
+    for(int i=0; i<bdCon.y; i++){       //sets all spaces of display board to the blank char
         for(int p=0; p<bdCon.x; p++){
             bdDisp[p][i]=blank;
         }
@@ -230,6 +200,7 @@ void boardGen(board bdCon, vector<vector<int>>& bd, vector<vector<char>> &bdDisp
 
 
 //Display functions--------------------------
+
 
 void disp(board bdCon, vector<vector<char>> &bdDisp){//displays the gameBoard
     cout<<"  ";
@@ -282,6 +253,18 @@ bool gameover(bool win){
     return again;
 }
 
+
+void dispBombs(vector<vector<char>> &bdDisp, vector<vector<int>> &bd, board& bdCon){
+    for(int i=0; i<bdCon.y; i++){//go through all the mine locations and set the display for each coord
+        for(int p=0; p<bdCon.x; p++){
+            if(bd[p][i]==9){
+                bdDisp[p][i]=bomb;
+            }
+        }
+    }
+}
+
+
 void reset(vector<vector<int>> &bd, vector<vector<char>> &bdDisp, board& bdCon){//funtion to reset the bd and the bdDisp
     for(int i=0; i<bdCon.y; i++){//reset every coord
         for(int p=0; p<bdCon.x; p++){
@@ -332,7 +315,7 @@ void zero(coord g, vector<vector<int>> &bd, vector<vector<char>> &bdDisp, board 
     found.at(0)=g;                  //set first 0 point to be the guess since the guess has been determined to be zero
     int run=1;
     do{
-        coord inter;//temp holder
+        coord inter;                //temp holder
         inter=found.at(i);
         checkR(rx, ry, inter, bdCon);
         used[inter.x][inter.y]=1;       //add current zero to used list
@@ -340,39 +323,23 @@ void zero(coord g, vector<vector<int>> &bd, vector<vector<char>> &bdDisp, board 
             for(int k=rx[0]; k<rx[1]; k++){
                 bdDisp[inter.x+k][inter.y+j]=char(bd[inter.x+k][inter.y+j]+48);//uncover spaces next to 0's
                 if(k==0 and j==0){      //dont want to count the poi again
-                    //idk
                 }else{
                     if(bd[inter.x+k][inter.y+j]==0 and used[inter.x+k][inter.y+j]==0){
                         found.at(run).x=inter.x+k;  //add new zero to list
                         found.at(run).y=inter.y+j;
                         run++;                      //adds to the total runs
                     }
-
                 }
-                //cout<<inter.x+k<<" "<<inter.y+j<<endl;
             }
         }
         i++;
-        //cout<<"_______________________________"<<endl;
     }while(i<run);
 }
 
 
-void dispBombs(vector<vector<char>> &bdDisp, vector<vector<int>> &bd, board& bdCon){
-    for(int i=0; i<bdCon.y; i++){//go through all the mine locations and set the display for each coord
-        for(int p=0; p<bdCon.x; p++){
-            if(bd[p][i]==9){
-                bdDisp[p][i]=bomb;
-            }
-        }
-    }
-}
-
-
 bool checkWin(vector<vector<char>> &bdDisp, board& bdCon){
-    /* If the number of blanks is equal to the number of bombs generated
-     * then the user wins!
-     */
+    // If the number of blanks is equal to the number of bombs generated
+    // then the user wins!
     int i=0;
     bool w=false;
     for(int j=0; j<bdCon.y; j++){   //counts the num of blanks
@@ -389,6 +356,8 @@ bool checkWin(vector<vector<char>> &bdDisp, board& bdCon){
     }
     return w;
 }
+
+
 
 void action(coord g, vector<vector<int>> &bd, vector<vector<char>> &bdDisp, board& bdCon, endVars& e){
     //hub for controling all the actions depending on what the user guesses
@@ -408,24 +377,24 @@ void action(coord g, vector<vector<int>> &bd, vector<vector<char>> &bdDisp, boar
 }
 
 
+//----------------------------------Main------------------------------------------
+
 int main(){
     srand(time(NULL));//Seed the rand num gen
     board bdCon;//define board Constructor
     coord g;//define var for holding guess coord
     endVars e;
+
     e.win=false;
     e.end=false;
     init(bdCon);//ask for size and set the size
     bombGen(bdCon);//generate bomb locations and store them in the board construct
 
-    //printMineCoords(bdCon);
-
     vector<vector<int>> bd(bdCon.y, vector<int>(bdCon.x, 0));//define 2d vector for game board with size | This holds all the needed info
     vector<vector<char>> bdDisp(bdCon.y, vector<char>(bdCon.x, blank));//define 2d vector for game board with size | this is displayed
-    boardGen(bdCon, bd, bdDisp);//generate the game board
 
+    boardGen(bdCon, bd, bdDisp);//generate the game board
     disp(bdCon, bdDisp);//display the initial game board
-    //dispDebug(bdCon, bd);
 
     while(true){
         guess(g, bdCon);
@@ -433,12 +402,10 @@ int main(){
         if(e.end){
             if(gameover(e.win)){//reset everything............
                 init(bdCon);
-                bombGen(bdCon);     //generate bomb locations
+                bombGen(bdCon);//regenerate bomb locations
                 reset(bd, bdDisp, bdCon);
                 boardGen(bdCon, bd, bdDisp);
                 disp(bdCon, bdDisp);
-                //printMineCoords(bdCon);
-                //dispDebug(bdCon, bd);
                 e.end=false;
             }else{
                 cout<<"\n\n\n               Thanks for playing!      "<<endl<<endl<<endl<<endl;
@@ -448,6 +415,5 @@ int main(){
             disp(bdCon, bdDisp);
         }
     }
-    //end of this shit_______________________________________________
     return 0;
 }
